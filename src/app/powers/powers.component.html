@@ -1,0 +1,21 @@
+<h2>All powers</h2>
+
+<button type="button" routerLink="/heroes/new">New</button>
+
+<table >
+    <tr>
+      <th>Power</th>
+      <th>Actions</th>
+    </tr>
+    <tr *ngFor="let power of powers">
+      <td>{{power.name}}</td>
+      
+
+      <td style="text-align: end;">
+        <button class="btn" routerLink="/detail/{{power.id}}">Edit</button>
+        <!-- <button class="btn delete-btn" id="button-table" (click)="open(power)">Delete</button> -->
+      </td>
+    </tr>
+  </table>
+  
+  
