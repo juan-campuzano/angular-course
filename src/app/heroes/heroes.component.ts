@@ -2,12 +2,14 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { NgFor, UpperCasePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { switchMap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 
 import { Hero } from './hero';
 import { HeroDetailsComponent } from '../hero-details/hero-details.component';
 import { HeroService } from './hero.service';
 import { MessageService } from '../message.service';
+import { Power } from '../powers/power';
+import { PowersService } from '../powers/powers.service';
 
 
 @Component({
@@ -26,10 +28,12 @@ export class HeroesComponent {
   @ViewChild('confirmationDialog') confirmationDialog!: ElementRef<HTMLDialogElement>;
 
   heroes : Hero[] = [];
+  powers : Power[] = [];
   selectedHero?: Hero;
 
   constructor(
     private heroService: HeroService,
+    private powerService: PowersService,
     private messageService: MessageService
   ) {}
 
@@ -44,8 +48,15 @@ export class HeroesComponent {
   }
 
   getHeroes(): void {
-    this.heroService.getHeroes()
-      .subscribe(heroes => this.heroes = heroes)
+    this.heroService.getHeroes().pipe(
+      tap(heroes => 
+        heroes.forEach(hero => 
+          this.powerService.getPowerById(hero.power).subscribe(
+            power => hero.powerName = power.name
+          )
+        )
+      )
+    ).subscribe(heroes => this.heroes = heroes);
   }
 
   onDeleteHero(): void{
